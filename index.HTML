@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج استلام المنتجات</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            text-align: right;
+            margin: 20px;
+            background-color: #f4f6f9;
+        }
+        .container {
+            max-width: 650px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 22px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .product-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .add-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .add-btn:hover {
+            background-color: #0056b3;
+        }
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .save-btn:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📝 نموذج استلام المنتجات</h2>
+
+        <label>👤 اسم المستخدم:</label>
+        <input type="text" id="username" placeholder="أدخل اسمك">
+
+        <label>📅 التاريخ:</label>
+        <input type="date" id="date">
+
+        <label>⏰ الوقت:</label>
+        <input type="time" id="time">
+
+        <button class="add-btn" onclick="addProduct()">➕ إضافة منتج</button>
+
+        <div id="products"></div>
+
+        <button class="save-btn" onclick="saveData()">💾 حفظ البيانات</button>
+
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>اسم المستخدم</th>
+                    <th>التاريخ</th>
+                    <th>الوقت</th>
+                    <th>نوع المنتج</th>
+                    <th>اسم المنتج</th>
+                    <th>الكمية</th>
+                    <th>الوحدة</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const productTypes = {
+            "فواكه": ["تفاح", "برتقال", "موز", "عنب", "رمان", "مانجو", "كيوي"],
+            "خضروات": ["طماطم", "خيار", "جزر", "بطاطس", "بصل", "فلفل", "قرنبيط"],
+            "ورقيات": ["خس", "سبانخ", "بقدونس", "كزبرة", "جرجير", "نعناع"],
+            "لحوم": ["دجاج", "لحم بقر", "لحم غنم", "سمك", "روبيان"],
+            "ألبان": ["حليب", "زبادي", "جبن", "لبنة", "زبدة"],
+            "مخبوزات": ["خبز", "كعك", "توست", "كرواسون", "بسكويت"],
+            "معلبات": ["تونة", "فول", "حمص", "ذرة", "مربى"],
+            "منتجات أخرى": ["عسل", "تمر", "مكسرات", "شيكولاتة", "قهوة"]
+        };
+
+        function addProduct() {
+            let container = document.createElement("div");
+            container.classList.add("product-container");
+
+            let labelType = document.createElement("label");
+            labelType.innerText = "نوع المنتج:";
+            let selectType = document.createElement("select");
+            selectType.innerHTML = `<option value="">اختر النوع</option>` +
+                Object.keys(productTypes).map(type => `<option value="${type}">${type}</option>`).join("");
+            selectType.onchange = function () { updateProductList(selectType, productSelect); };
+
+            let labelProduct = document.createElement("label");
+            labelProduct.innerText = "اسم المنتج:";
+            let productSelect = document.createElement("select");
+
+            let labelQuantity = document.createElement("label");
+            labelQuantity.innerText = "الكمية:";
+            let inputQuantity = document.createElement("input");
+            inputQuantity.type = "number";
+            inputQuantity.placeholder = "أدخل الكمية";
+
+            let labelUnit = document.createElement("label");
+            labelUnit.innerText = "الوحدة:";
+            let selectUnit = document.createElement("select");
+            selectUnit.innerHTML = `<option value="كيلوغرام">كيلوغرام</option>
+                                    <option value="غرام">غرام</option>`;
+
+            container.appendChild(labelType);
+            container.appendChild(selectType);
+            container.appendChild(labelProduct);
+            container.appendChild(productSelect);
+            container.appendChild(labelQuantity);
+            container.appendChild(inputQuantity);
+            container.appendChild(labelUnit);
+            container.appendChild(selectUnit);
+
+            document.getElementById("products").appendChild(container);
+        }
+
+        function updateProductList(selectType, productSelect) {
+            let type = selectType.value;
+            productSelect.innerHTML = `<option value="">اختر المنتج</option>`;
+
+            if (type in productTypes) {
+                productTypes[type].forEach(product => {
+                    let option = document.createElement("option");
+                    option.value = product;
+                    option.textContent = product;
+                    productSelect.appendChild(option);
+                });
+            }
+        }
+
+        function saveData() {
+            let username = document.getElementById("username").value;
+            let date = document.getElementById("date").value;
+            let time = document.getElementById("time").value;
+            let tableBody = document.querySelector("#dataTable tbody");
+
+            document.querySelectorAll(".product-container").forEach(container => {
+                let type = container.querySelector("select").value;
+                let product = container.querySelectorAll("select")[1].value;
+                let quantity = container.querySelector("input").value;
+                let unit = container.querySelectorAll("select")[2].value;
+
+                let row = tableBody.insertRow();
+                row.innerHTML = `<td>${username}</td>
+                                 <td>${date}</td>
+                                 <td>${time}</td>
+                                 <td>${type}</td>
+                                 <td>${product}</td>
+                                 <td>${quantity}</td>
+                                 <td>${unit}</td>`;
+            });
+
+            document.getElementById("username").value = "";
+            document.getElementById("date").value = "";
+            document.getElementById("time").value = "";
+            document.getElementById("products").innerHTML = "";
+            alert("✅ تم حفظ البيانات وإعادة التعيين!");
+        }
+    </script>
+
+</body>
+</html>
